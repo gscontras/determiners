@@ -1,0 +1,173 @@
+var worldPrior = function(){
+  return [{fep: flip(0.5), blue: flip(0.5)},
+          {fep: flip(0.5), blue: flip(0.5)}]//,
+  //           {fep: flip(0.0001), blue: flip(0.25)}]
+}
+
+var utterances = ["the fep is blue", 
+                  "a fep is blue", 
+                  "the fep isn't blue", 
+                  "a fep isn't blue", 
+                  "",
+                  //                   "every fep is blue",
+                  "every thing is blue",
+                  "every thing isn't blue"
+                 ];
+// var utterances = ["the fep is blue", "a fep is blue", ""];
+//var cost = function(u) {return 1}//u.split(" ").length}
+var cost = function(u) {
+  var words = u.split(" ")
+  var verb = words[2]
+  if (verb==="isn't") {
+    return 2
+  } else {
+    return 1
+  }
+}
+
+
+var utterancePrior = function() {
+  return utterances[discrete(map(function(u) {return Math.exp(-cost(u));}, 
+                                 utterances))];
+};  
+
+var meaning = function(utterance, world, index) {
+  if (utterance=="") return true //null utterance (should be cheap?)
+  var words = utterance.split(" ")
+  var det = words[0]
+  var cat = words[1]
+  var verb = words[2]
+  var prop = words[3]
+  if (det==="every") {
+    if (verb == "is") {
+      //       return all(function(x){x[cat] & x[prop]}, world)
+      return all(function(x){x[prop]}, world)
+    } else {
+      //       return all(function(x){x[cat] & !x[prop]}, world)
+      return all(function(x){!x[prop]}, world)
+    }
+  }
+  if (det==="the") {
+    //version 1: sample a fep and check if it's blue
+    var catMembers = filter(function(x){return x[cat]}, world)
+    if (catMembers.length == 0) {return false}
+    var sampledMember = uniformDraw(catMembers) 
+    if (verb == "is") {return sampledMember[prop]
+                      } else {return !sampledMember[prop]}
+    //version 2: infer *the* fep and check its blueness
+    //     var catMembers = filter(function(x){return x[cat]}, world)
+    //     if (catMembers.length == 0) {return false}
+    //     var sampledMember = world[index] 
+    //     if (sampledMember[cat] == false) {return false}
+    //     return sampledMember[prop]
+  } else { //"a", 
+    //version 1: existential version:
+    if (verb == "is") {return any(function(x){x[cat] & x[prop]}, world)
+                      } else {return any(function(x){x[cat] & !x[prop]}, world)
+                             }
+    //version 2: free index version:
+    //     var index = randomInteger(world.length)
+    //     if (verb == "is") {return world[index][cat] & world[index][prop]
+    //                       } else {return world[index][cat] & !world[index][prop]
+    //                              }
+    //version 3: infer index version:
+    //     if (verb == "is") {return world[index][cat] & world[index][prop]
+    //                       } else {return world[index][cat] & !world[index][prop]
+    //                              }
+  }
+};
+
+//things that are known to be true (used in both listeners):
+var commonKnowledge = function(world,ck) {
+  //return ck?world[1].fep:true //world[0].fep & !world[1].fep & !world[2].fep
+  //presup here is: "there is a unique fep"
+  var prop = filter(function(x){return x.fep}, world).length == 1
+  return ck?prop:true
+}
+
+//possible QUDs
+var quds = ["state", "which"];
+var qudPrior = uniformDraw(quds);
+var qudFn = function(world qud) {
+  if (qud=="state") {
+    return world
+  } 
+  if (qud=="which") {
+    //     if (filter(function(x){return x.blue}, world).length == 1) {
+    //       var prop = filter(function(x){return x.blue}, world)
+    //       return prop;
+    //     } else {
+    return world;
+    //     }
+  }
+}
+
+var literalERP = cache(function(utterance, index, ck, qud) {
+  return Enumerate(function() {
+    var world = worldPrior()
+    condition(meaning(utterance, world, index))
+    //     factor(commonKnowledge(world,ck)?0:-100)
+    return qudFn(world, qud);
+  })
+})
+
+var alpha = 6;
+
+var speakerERP = cache(function(world, index, ck, qud) {
+  return Enumerate(function() {
+    var utterance = utterancePrior();
+    factor( alpha * literalERP(utterance, index, ck, qud).score([], world) );
+    return utterance;
+  });
+});
+
+var listenerERP = cache(function(utterance) {
+  return Enumerate(function() {
+    var world = worldPrior();
+    var ck = false//flip(0.1) //is some prop in cg?
+    var index = randomInteger(world.length)
+    var qud = qudPrior;
+    var val = qudFn(world, qud);
+    factor( speakerERP(val, index, ck, qud).score([], utterance) );
+    //     factor(commonKnowledge(world,ck)?0:-100)
+    return world //map(function(x){return x.fep}, world)
+  });
+});
+
+var speaker2ERP = function(world) {
+  return Enumerate(function() {
+    var utterance = utterancePrior();
+    factor( alpha * listenerERP(utterance).score([], world) );
+    return utterance;
+  });
+}
+
+print("the fep is blue")
+print(listenerERP("the fep is blue"))
+print("a fep is blue")
+print(listenerERP("a fep is blue"))
+
+print("the fep isn't blue")
+print(listenerERP("the fep isn't blue"))
+print("a fep isn't blue")
+print(listenerERP("a fep isn't blue"))
+
+
+
+var worldthe = [{fep: true, blue: true},
+                //                 {fep: false, blue: false},
+                {fep: false, blue: false}]
+var worldblue = [{fep: true, blue: true},
+                 //                 {fep: false, blue: false},
+                 {fep: false, blue: true}]
+var worlda = [{fep: true, blue: true},
+              //               {fep: true, blue: false},
+              {fep: true, blue: false}]
+print(speaker2ERP(worldthe))
+print(speaker2ERP(worldblue))
+print(speaker2ERP(worlda))
+// print(speakerERP(worlda, 0, false).score([],"the fep isBlue"))
+// print(speakerERP(worlda, 0, true).score([],"the fep isBlue"))
+
+// print(literalERP("a fep isn't blue",0,false))
+// print(literalERP("the fep isn't blue",0,false))
