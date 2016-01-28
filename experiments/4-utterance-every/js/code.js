@@ -310,7 +310,7 @@ function make_slides(f) {
 function init() {
   repeatWorker = false;
   (function(){
-      var ut_id = "greg-unique-turker-test-15-12-2015";
+      var ut_id = "determiners-utterance-every";
       if (UTWorkerLimitReached(ut_id)) {
         $('.slide').empty();
         repeatWorker = true;

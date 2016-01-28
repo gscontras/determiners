@@ -1,13 +1,33 @@
 library(ggplot2)
 
-setwd("~/Documents/git/cocolab/determiners/experiments/2-choose-utterance/Submiterator-master")
+setwd("~/Documents/git/cocolab/determiners/experiments/4-utterance-every/Submiterator-master")
 
-d = read.table("choose-utterance-trials.tsv",sep="\t",header=T)
-head(d)
-s = read.table("choose-utterance-subject_information.tsv",sep="\t",header=T)
-head(s)
-d$language = s$language[match(d$workerid,s$workerid)]
-summary(d)
+library(tidyr)
+library(dplyr)
+
+#d = read.csv("round4/order-preference-expanded.csv")
+
+#d[sapply(d, is.factor)] <- lapply(d[sapply(d, is.factor)], as.character)
+#df[sapply(df, is.factor)] <- lapply(df[sapply(df, is.factor)], as.character)
+#e = rbind(df,d)
+
+num_round_dirs = 1
+df = do.call(rbind, lapply(1:num_round_dirs, function(i) {
+  return (read.csv(paste(
+    'round', i, '/utterance-every-trials.csv', sep='')) %>%
+      mutate(workerid = (workerid + (i-1)*9)))}))
+#unique(df$comments)
+num_round_dirs = 1
+sf = do.call(rbind, lapply(1:num_round_dirs, function(i) {
+  return (read.csv(paste(
+    'round', i, '/utterance-every-subject_information.csv', sep='')) %>%
+      mutate(workerid = (workerid + (i-1)*9)))}))
+head(sf)
+unique(sf$language)
+df$language = sf$language[match(df$workerid,sf$workerid)]
+summary(df)
+
+d <- df
 
 d$scene <- as.character(d$scene)
 
