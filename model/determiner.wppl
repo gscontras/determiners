@@ -1,3 +1,31 @@
+
+
+// ======== helpers  =========
+
+var print = function(str) {
+  console.log(str);
+};
+
+var printERP = function(erp) {
+  var support = erp.support();
+  var probs = map(function(x) {return Math.exp(erp.score([], x));}, support);
+  print("var s = " + JSON.stringify(support) + ";");
+  print("var p = " + JSON.stringify(probs) + ";");
+  print("print(Enumerate(function() {return s[discrete(p)];}))")
+};
+
+var vizPrint = function(erp) {
+  var support = erp.support();
+  var probs = map(function(x) {return Math.exp(erp.score([], x));}, support);
+  print("var s = " + JSON.stringify(support) + ";");
+  print("var p = " + JSON.stringify(probs) + ";");
+  print("vizPrint(Enumerate(function() {return s[discrete(p)];}))")
+};
+
+
+// ======== model  =========
+
+
 var worldPrior = function(){
   return [{fep: flip(0.5), blue: flip(0.5)},
           {fep: flip(0.5), blue: flip(0.5)}]//,
@@ -6,19 +34,19 @@ var worldPrior = function(){
 
 var utterances = ["the fep is blue", 
                   "a fep is blue", 
-                  "the fep isn't blue", 
-                  "a fep isn't blue", 
+                  "the fep isnt blue", 
+                  "a fep isnt blue", 
                   "",
                   //                   "every fep is blue",
                   "every thing is blue",
-                  "every thing isn't blue"
+                  "every thing isnt blue"
                  ];
 // var utterances = ["the fep is blue", "a fep is blue", ""];
 //var cost = function(u) {return 1}//u.split(" ").length}
 var cost = function(u) {
   var words = u.split(" ")
   var verb = words[2]
-  if (verb==="isn't") {
+  if (verb==="isnt") {
     return 2
   } else {
     return 1
@@ -134,23 +162,23 @@ var listenerERP = cache(function(utterance) {
   });
 });
 
-var speaker2ERP = function(world) {
+var speaker2ERP = cache(function(world) {
   return Enumerate(function() {
     var utterance = utterancePrior();
     factor( alpha * listenerERP(utterance).score([], world) );
     return utterance;
   });
-}
+});
 
-print("the fep is blue")
-print(listenerERP("the fep is blue"))
-print("a fep is blue")
-print(listenerERP("a fep is blue"))
+// print("the fep is blue")
+// print(listenerERP("the fep is blue"))
+// print("a fep is blue")
+// print(listenerERP("a fep is blue"))
 
-print("the fep isn't blue")
-print(listenerERP("the fep isn't blue"))
-print("a fep isn't blue")
-print(listenerERP("a fep isn't blue"))
+// print("the fep isn't blue")
+// print(listenerERP("the fep isn't blue"))
+// print("a fep isn't blue")
+// print(listenerERP("a fep isn't blue"))
 
 
 
@@ -163,11 +191,41 @@ var worldblue = [{fep: true, blue: true},
 var worlda = [{fep: true, blue: true},
               //               {fep: true, blue: false},
               {fep: true, blue: false}]
-print(speaker2ERP(worldthe))
-print(speaker2ERP(worldblue))
-print(speaker2ERP(worlda))
+
+// print(speaker2ERP(worldthe))
+// print(speaker2ERP(worldblue))
+// print(speaker2ERP(worlda))
+// printERP(speaker2ERP(worldthe))
+// printERP(speaker2ERP(worldblue))
+// printERP(speaker2ERP(worlda))
+var l_output = listenerERP("a fep isnt blue")
+print(l_output)
+
+var s_output = speaker2ERP(worlda)
+print(s_output)
+
+// var output = printERP(speaker2ERP(worlda))
+Utils.erpWriter(l_output,"listener.csv","Value");
+Utils.erpWriter(s_output,"speaker.csv","Value");
+
+
+// getTime();
+
+// var fs = require('fs');
+// fs.writeFile(output);
+// vizPrint(speaker2ERP(worldthe))
+// vizPrint(speaker2ERP(worldblue))
+// vizPrint(speaker2ERP(worlda))
+// speaker2ERP(worldthe)
+// speaker2ERP(worldblue)
+// speaker2ERP(worlda)
+
 // print(speakerERP(worlda, 0, false).score([],"the fep isBlue"))
 // print(speakerERP(worlda, 0, true).score([],"the fep isBlue"))
 
 // print(literalERP("a fep isn't blue",0,false))
 // print(literalERP("the fep isn't blue",0,false))
+
+"finished"
+
+// speaker2ERP(worldthe)

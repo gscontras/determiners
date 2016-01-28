@@ -1,0 +1,8 @@
+Value,Probability
+'[{"fep":false,"blue":false},{"fep":true,"blue":false}]',0.026427953112209426
+'[{"fep":false,"blue":true},{"fep":true,"blue":false}]',0.24081776609102715
+'[{"fep":true,"blue":false},{"fep":false,"blue":false}]',0.026427953112209426
+'[{"fep":true,"blue":false},{"fep":false,"blue":true}]',0.24081776609102715
+'[{"fep":true,"blue":false},{"fep":true,"blue":false}]',0.026427953112209426
+'[{"fep":true,"blue":false},{"fep":true,"blue":true}]',0.21954030424065873
+'[{"fep":true,"blue":true},{"fep":true,"blue":false}]',0.21954030424065873
