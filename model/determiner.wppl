@@ -139,7 +139,7 @@ var literalERP = cache(function(utterance, index, ck, qud) {
   })
 })
 
-var alpha = 6;
+var alpha = 3;
 
 var speakerERP = cache(function(world, index, ck, qud) {
   return Enumerate(function() {
@@ -208,6 +208,25 @@ print(s_output)
 Utils.erpWriter(l_output,"listener.csv","Value");
 Utils.erpWriter(s_output,"speaker.csv","Value");
 
+
+
+// printERP(speaker2ERP(worlda))
+var a_is = listenerERP("a fep is blue")
+Utils.erpWriter(a_is,"a_is.csv","Value");
+var a_not = listenerERP("a fep isnt blue")
+Utils.erpWriter(a_not,"a_not.csv","Value");
+var the_is = listenerERP("the fep is blue")
+Utils.erpWriter(the_is,"the_is.csv","Value");
+var the_not = listenerERP("the fep isnt blue")
+Utils.erpWriter(the_not,"the_not.csv","Value");
+
+
+// var s_output = speaker2ERP(worlda)
+// print(s_output)
+
+// var output = printERP(speaker2ERP(worlda))
+// Utils.erpWriter(l_output,"listener.csv","Value");
+// Utils.erpWriter(s_output,"speaker.csv","Value");
 
 // getTime();
 
