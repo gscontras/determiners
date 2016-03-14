@@ -192,6 +192,26 @@ var worlda = [{fep: true, blue: true},
               //               {fep: true, blue: false},
               {fep: true, blue: false}]
 
+var w_1111 = [{fep: true, blue: true},
+                {fep: true, blue: true}]   
+
+var w_1112 = [{fep: true, blue: true},
+                {fep: true, blue: false}]                              
+
+var w_1212 = [{fep: true, blue: false},
+                {fep: true, blue: false}]   
+
+var w_1121 = [{fep: true, blue: true},
+                {fep: false, blue: true}]                   
+
+var w_1122 = [{fep: true, blue: true},
+                {fep: false, blue: false}]                   
+
+var w_1221 = [{fep: true, blue: false},
+                {fep: false, blue: true}]   
+
+var w_1222 = [{fep: true, blue: false},
+                {fep: false, blue: false}]   
 // print(speaker2ERP(worldthe))
 // print(speaker2ERP(worldblue))
 // print(speaker2ERP(worlda))
@@ -205,21 +225,35 @@ var s_output = speaker2ERP(worlda)
 print(s_output)
 
 // var output = printERP(speaker2ERP(worlda))
-Utils.erpWriter(l_output,"listener.csv","Value");
-Utils.erpWriter(s_output,"speaker.csv","Value");
+// Utils.erpWriter(l_output,"listener.csv","Value");
+// Utils.erpWriter(s_output,"speaker.csv","Value");
 
 
 
 // printERP(speaker2ERP(worlda))
-var a_is = listenerERP("a fep is blue")
-Utils.erpWriter(a_is,"a_is.csv","Value");
-var a_not = listenerERP("a fep isnt blue")
-Utils.erpWriter(a_not,"a_not.csv","Value");
-var the_is = listenerERP("the fep is blue")
-Utils.erpWriter(the_is,"the_is.csv","Value");
-var the_not = listenerERP("the fep isnt blue")
-Utils.erpWriter(the_not,"the_not.csv","Value");
+// var a_is = listenerERP("a fep is blue")
+// Utils.erpWriter(a_is,"a_is.csv","Value");
+// var a_not = listenerERP("a fep isnt blue")
+// Utils.erpWriter(a_not,"a_not.csv","Value");
+// var the_is = listenerERP("the fep is blue")
+// Utils.erpWriter(the_is,"the_is.csv","Value");
+// var the_not = listenerERP("the fep isnt blue")
+// Utils.erpWriter(the_not,"the_not.csv","Value");
 
+var s_1111 = speaker2ERP(w_1111)
+Utils.erpWriter(s_1111,"1111.csv","Value");
+var s_1112 = speaker2ERP(w_1112)
+Utils.erpWriter(s_1112,"1112.csv","Value");
+var s_1212 = speaker2ERP(w_1212)
+Utils.erpWriter(s_1212,"1212.csv","Value");
+var s_1121 = speaker2ERP(w_1121)
+Utils.erpWriter(s_1121,"1121.csv","Value");
+var s_1122 = speaker2ERP(w_1122)
+Utils.erpWriter(s_1122,"1122.csv","Value");
+var s_1221 = speaker2ERP(w_1221)
+Utils.erpWriter(s_1221,"1221.csv","Value");
+var s_1222 = speaker2ERP(w_1222)
+Utils.erpWriter(s_1222,"1222.csv","Value");
 
 // var s_output = speaker2ERP(worlda)
 // print(s_output)

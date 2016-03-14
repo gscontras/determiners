@@ -97,9 +97,9 @@ ggplot(d, aes(x=scene,fill=response))+
 
 
 
-##############################
-##### MODEL PREDICTIONS #####
-##############################
+###########################################
+##### COMPREHENSION MODEL PREDICTIONS #####
+###########################################
 
 a_is = read.csv("~/Documents/git/CoCoLab/determiners/model/a_is.csv", quote = "'")
 head(a_is)
@@ -175,8 +175,70 @@ ggplot(dat.all, aes(x=expt,y=Probability,color=state))+
   #geom_point(position=position_dodge())+
   geom_bar(aes(fill=state),stat="identity",position=position_dodge())+
   facet_grid(.~utterance)+
-  theme_bw()
+  theme_bw()+
+  labs(title="comprehension")
 #ggsave("../results/human_model_listener.pdf")
 
 
 
+###########################################
+##### PRODUCTION MODEL PREDICTIONS #######
+###########################################
+
+w1111 = read.csv("~/Documents/git/CoCoLab/determiners/model/1111.csv", quote = "'")
+head(w1111)
+w1111$scene = 1111
+w1112 = read.csv("~/Documents/git/CoCoLab/determiners/model/1112.csv", quote = "'")
+head(w1112)
+w1112$scene = 1112
+w1212 = read.csv("~/Documents/git/CoCoLab/determiners/model/1212.csv", quote = "'")
+head(w1212)
+w1212$scene = 1212
+w1121 = read.csv("~/Documents/git/CoCoLab/determiners/model/1121.csv", quote = "'")
+head(w1121)
+w1121$scene = 1121
+w1122 = read.csv("~/Documents/git/CoCoLab/determiners/model/1122.csv", quote = "'")
+head(w1122)
+w1122$scene = 1122
+w1221 = read.csv("~/Documents/git/CoCoLab/determiners/model/1221.csv", quote = "'")
+head(w1221)
+w1221$scene = 1221
+w1222 = read.csv("~/Documents/git/CoCoLab/determiners/model/1222.csv", quote = "'")
+head(w1222)
+w1222$scene = 1222
+m = rbind(w1111,w1112,w1212,w1121,w1122,w1221,w1222)
+head(m)
+m$response = NA
+m[m$Value=="\"every thing is blue\"",]$response = "every_is"
+m[m$Value=="\"\"",]$response = "null"
+m[m$Value=="\"a fep is blue\"",]$response = "a_is"
+m[m$Value=="\"the fep is blue\"",]$response = "the_is"
+m[m$Value=="\"a fep isnt blue\"",]$response = "a_not"
+m[m$Value=="\"the fep isnt blue\"",]$response = "the_not"
+m[m$Value=="\"every thing isnt blue\"",]$response = "every_not"
+head(m)
+head(d)
+m$expt = "model"
+d_d <- subset(d, select = c("response","scene","expt"))
+d_d <- as.data.frame(prop.table(table(d_d$response,d_d$scene),1),mar=1)
+d_d$expt = "human"
+colnames(d_d) <- c("utterance","state","Probability","expt")
+m_d <- subset(m, select = c("response","scene","Probability","expt"))
+head(m_d)
+colnames(m_d) <- c("utterance","state","Probability","expt")
+p_d = rbind(d_d,m_d)
+p_d$Probability <- as.numeric(as.character(p_d$Probability))
+
+
+p_agg = aggregate(Probability~utterance*state*expt,data=p_d,sum)
+p_dat.all <- rbind(p_agg, cbind(expand.grid(utterance=levels(p_agg$utterance), state=levels(p_agg$state)), Probability=NA, expt="model"))
+
+
+ggplot(p_dat.all, aes(x=expt,y=Probability,color=utterance))+
+  #geom_histogram(position=position_dodge())+
+  #geom_point(position=position_dodge())+
+  geom_bar(aes(fill=utterance),stat="identity",position=position_dodge())+
+  facet_grid(.~state)+
+  theme_bw() +
+  labs(title="production\n")
+#ggsave("../results/human_model_speaker.pdf")
