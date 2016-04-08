@@ -1,0 +1,475 @@
+<html>
+
+<head>
+    <title>Creatures</title>
+
+    <!--JS-->
+
+    <!-- external general utilities -->
+    <script src="../_shared/js/jquery-1.11.1.min.js "></script>
+    <script src="../_shared/full-projects/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../_shared/js/underscore-min.js"></script>
+    <script src="../_shared/js/ecosystem.js"></script>
+    <!-- if you want to draw stuff: -->
+    <script src="../_shared/js/raphael-min.js"></script>
+
+    <!-- cocolab experiment logic -->
+    <script src="../_shared/js/exp-V2.js"></script>
+    <script src="../_shared/js/stream-V2.js"></script>
+
+    <!-- cocolab general utilities -->
+    <script src="../_shared/js/mmturkey.js "></script>
+    <script src="../_shared/js/browserCheck.js"></script>
+    <script src="../_shared/js/utils.js"></script>
+    <!-- if you want to draw cute creatures (depends on raphael): -->
+    <!-- <script src="../_shared/js/ecosystem.js"></script> -->
+
+    <!-- experiment specific helper functions -->
+    <!-- <script src="js/local-utils.js"></script> -->
+
+    <!--CSS-->
+    <link href="../_shared/full-projects/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../_shared/css/cocolab-style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/local-style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- experiment file -->
+    <script src="js/code.js"></script>
+	<script src="js/stims.js"></script>
+	<script src="js/names.js"></script>
+
+    <!-- check unique turkers -->
+    <script src="../_shared/js/uniqueturker.js"></script>
+    
+
+    
+</head>
+
+<body onload="init();">
+  <noscript>This task requires JavaScript.</noscript>
+
+  <div class="slide" id="i0" >
+    <img src="../_shared/images/cocologo.png" alt="Stanford CoCoLab" id="cocologo"></img>
+    <p id="cocolab">Stanford CoCoLab</p>
+    <p>In this experiment, you will see some plants and animals and read sentences of English. The HIT should take about five minutes. Please pay attention, thanks!</p>
+    <button id="start_button" type="button">Start Experiment</button>
+    <p id="legal">Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Greg Scontras at <a href="mailto://scontras@stanford.edu">scontras@stanford.edu</a> or Noah Goodman, at ngoodman@stanford.edu. You must be  at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+  </div>
+
+  <div class="slide" id="instructions">
+    <h3>Instructions</h3>
+
+    <p>In this task, you will read a series of 24 sentences. <br>
+    For each sentence, you will guess the scene that the speaker is trying to describe.
+    </p>
+
+    <!-- <p>You will see 4 sets of scenarios involving bugs, birds, flowers, and fish on planet Smultron. Please consider each scenario carefully, and then make judgments about it.</p> -->
+
+    <button onclick="_s.button()">Continue</button>
+  </div>
+
+	<div class="slide" id="bird_intro">
+			<!-- <p>On Smultron, there are only two types of birds: <span class="birds_a">{{}}</span> and <span class="birds_b">{{}}</span>. There are no other birds. After years of study, scientists have catalogued the <span class="birds_a">{{}}</span> and <span class="birds_b"></span>. Have a look!</br>
+			Pay close attention to their <b>crests</b> and <b>tails</b>.</p> -->
+			<br>
+
+			<h3 class="prompt"><span class="name"></span> said, <span class="sentence"></span></h3>
+
+			<br>
+
+				<table border = "1">
+				<!-- <tbody> -->
+				<tr>
+						<td class = "cell", id = "cell_0">
+							<svg class = "image", id="creature_0_a"></svg>
+							<svg class = "image", id="creature_0_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_1">
+							<svg class = "image", id="creature_1_a"></svg>
+							<svg class = "image", id="creature_1_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_2">
+							<svg class = "image", id="creature_2_a"></svg>
+							<svg class = "image", id="creature_2_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_3">
+							<svg class = "image", id="creature_3_a"></svg>
+							<svg class = "image", id="creature_3_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_4">
+							<svg class = "image", id="creature_4_a"></svg>
+							<svg class = "image", id="creature_4_b"></svg>
+						</td>
+				</tr>	
+				<tr>
+						<td class = "cell", id = "cell_5">
+							<svg class = "image", id="creature_5_a"></svg>
+							<svg class = "image", id="creature_5_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_6">
+							<svg class = "image", id="creature_6_a"></svg>
+							<svg class = "image", id="creature_6_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_7">
+							<svg class = "image", id="creature_7_a"></svg>
+							<svg class = "image", id="creature_7_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_8">
+							<svg class = "image", id="creature_8_a"></svg>
+							<svg class = "image", id="creature_8_b"></svg>
+						</td>
+						<td class = "cell", id = "cell_9">
+							<svg class = "image", id="creature_9_a"></svg>
+							<svg class = "image", id="creature_9_b"></svg>
+						</td>
+				</tr>					
+	<!-- 			<tr>
+						<td class = "cell", id = "cell_2">
+							<svg id="creature_c_0"></svg>
+							<svg id="creature_c_1"></svg>
+						</td>
+						<td class = "cell", id = "cell_3">
+							<svg id="creature_d_0"></svg>
+							<svg id="creature_d_1"></svg>
+						</td>
+				</tr> -->
+				<!-- </tbody> -->
+				</table>			
+			<!-- <p><span id="creature_q1">{{}}</span> <input type="text" id="creature_q1_a"/></p>
+			<p><span id="creature_q2">{{}}</span> <input type="text" id="creature_q2_a"/></p>
+			<p><span id="creature_q3">{{}}</span> <input type="text" id="creature_q3_a"/></p>
+			<p><span id="creature_q4">{{}}</span> <input type="text" id="creature_q4_a"/></p> -->
+
+			<br>
+
+			<p>Click on the scene that you think <span class="name"></span> saw.</p>
+
+			<!-- <button onclick="_s.button()">Continue</button> -->
+			<div class="qerr">Please answer all the questions before continuing.</div>			
+		</div>
+
+	<div class="slide" id="bird_slider">
+		<h3><span class="birds_a">{{}}</span> and <span class="birds_b"></span></h3>
+	    <p class="evidence1">Imagine you see a {{}}:</p>
+
+	    <div class="row" id="bird_row">
+	    	<div id="bird_evidence2" class="evidence2"></div>
+	    	<style>
+	    		#bird_evidence2{
+					background-color: #383838;
+				}
+			</style>
+	    </div>
+
+	    <p>Given what you know, what do you say to Mary,</br> who is back in the spaceship eagerly waiting for news?</p>
+
+	    <table>
+	    	<div id="bird_radiotable" align="center">{{}}
+			</div>
+	    </table> 
+
+	    <button onclick="_s.button()">Continue</button>
+	    <div class="err">Please make a selection before continuing.</div>
+	</div>
+
+	<div class="slide" id="bug_intro">
+		<h3><span class="bugs_a">{{}}</span> and <span class="bugs_b"></span></h3>
+		<div class = "animal">
+
+			<p>On Smultron, there are only two types of bugs: <span class="bugs_a">{{}}</span> and <span class="bugs_b">{{}}</span>. There are no other bugs. After years of study, scientists have catalogued the <span class="bugs_a">{{}}</span> and <span class="bugs_b">{{}}</span>. Have a look!</br>
+			Pay close attention to their <b>antennae</b> and <b>stingers</b>.</p>
+			
+				<table>
+				<tbody>
+				<tr>
+				These are the <span class="bugs_a">{{}}</span>: <!-- (pimwits: 50% tar1, 100% tar3) -->
+				</tr>
+				<tr>
+						<div>
+						<svg id="bug_a_0"></svg>
+						<svg id="bug_a_1"></svg>
+						<svg id="bug_a_2"></svg>
+						<svg id="bug_a_3"></svg>
+						</div>
+				</tr>					
+				<tr>
+					<div>
+						<svg id="bug_a_4"></svg>
+						<svg id="bug_a_5"></svg>
+						<svg id="bug_a_6"></svg>
+						<svg id="bug_a_7"></svg>
+						</div>
+				</tr>
+				<tr>
+				These are the <span class="bugs_b">{{}}</span>: <!-- (daxes: 25% tar1, 0% tar3) -->
+				</tr>
+				<tr>
+						<div>
+						<svg id="bug_b_0"></svg>
+						<svg id="bug_b_1"></svg>
+						<svg id="bug_b_2"></svg>
+						<svg id="bug_b_3"></svg>
+						</div>
+				</tr>					
+				<tr>
+					<div>
+						<svg id="bug_b_4"></svg>
+						<svg id="bug_b_5"></svg>
+						<svg id="bug_b_6"></svg>
+						<svg id="bug_b_7"></svg>
+						</div>
+				</tr>
+				</tbody>
+				</table>			
+			</div>
+			<p><span id="bug_q1">{{}}</span> <input type="text" id="bug_q1_a"/></p>
+			<p><span id="bug_q2">{{}}</span> <input type="text" id="bug_q2_a"/></p>
+			<p><span id="bug_q3">{{}}</span> <input type="text" id="bug_q3_a"/></p>
+			<p><span id="bug_q4">{{}}</span> <input type="text" id="bug_q4_a"/></p>
+			<button onclick="_s.button()">Continue</button>
+			<div class="qerr">Please answer all the questions before continuing.</div>			
+		</div>
+
+	<div class="slide" id="bug_slider">
+	<h3><span class="bugs_a">{{}}</span> and <span class="bugs_b"></span></h3>
+	   <p class="evidence1">Imagine all you can you see of a bug is its {{}}:</p>	    
+	    <div class="row" id="bug_row">
+	    	<div id="bug_evidence2" class="evidence2"></div>
+	    	<style>
+	    		#bug_evidence2{
+					background-color: #383838;
+				}
+			</style>
+	    </div>
+	    <p>Given what you know, what do you say to Mary,</br> who is back in the spaceship eagerly waiting for news?</p>
+
+	    <table>
+	    	<div id="bug_radiotable" align="center">{{}}
+			</div>
+	    </table> 
+
+	    <button onclick="_s.button()">Continue</button>
+	    <div class="err">Please make a selection before continuing.</div>
+	</div>
+
+	<div class="slide" id="flower_intro">
+		<h3><span class="flowers_a">{{}}</span> and <span class="flowers_b"></span></h3>
+		<div class = "animal">
+			<p>On Smultron, there are only two types of flowers: <span class="flowers_a">{{}}</span> and <span class="flowers_b">{{}}</span>. There are no other flowers. After years of study, scientists have catalogued the <span class="flowers_a">{{}}</span> and <span class="flowers_b">{{}}</span>. Have a look!</br> 
+			Pay close attention to their <b>tendrils</b> and <b>thorns</b>.</p>
+				<table>
+				<tbody>
+				<tr>
+				These are the <span class="flowers_a">{{}}</span>: <!-- (pimwits: 25% tar1, 100% tar3) -->
+				</tr>
+				<tr>
+						<div>
+						<svg id="flower_a_0"></svg>
+						<svg id="flower_a_1"></svg>
+						<svg id="flower_a_2"></svg>
+						<svg id="flower_a_3"></svg>
+						</div>
+				</tr>					
+				<tr>
+					<div>
+						<svg id="flower_a_4"></svg>
+						<svg id="flower_a_5"></svg>
+						<svg id="flower_a_6"></svg>
+						<svg id="flower_a_7"></svg>
+						</div>
+				</tr>
+				<tr>
+				These are the <span class="flowers_b">{{}}</span>: <!-- (daxes: 25% tar1, 0% tar3) -->
+				</tr>
+				<tr>
+						<div>
+						<svg id="flower_b_0"></svg>
+						<svg id="flower_b_1"></svg>
+						<svg id="flower_b_2"></svg>
+						<svg id="flower_b_3"></svg>
+						</div>
+				</tr>					
+				<tr>
+					<div>
+						<svg id="flower_b_4"></svg>
+						<svg id="flower_b_5"></svg>
+						<svg id="flower_b_6"></svg>
+						<svg id="flower_b_7"></svg>
+						</div>
+				</tr>
+				</tbody>
+				</table>			
+				</div>
+			<p><span id="flower_q1">{{}}</span> <input type="text" id="flower_q1_a"/></p>
+			<p><span id="flower_q2">{{}}</span> <input type="text" id="flower_q2_a"/></p>
+			<p><span id="flower_q3">{{}}</span> <input type="text" id="flower_q3_a"/></p>
+			<p><span id="flower_q4">{{}}</span> <input type="text" id="flower_q4_a"/></p>
+			<button onclick="_s.button()">Continue</button>
+			<div class="qerr">Please answer all the questions before continuing.</div>			
+		</div>
+
+	<div class="slide" id="flower_slider">
+		<h3><span class="flowers_a">{{}}</span> and <span class="flowers_b"></span></h3>
+	   <p class="evidence1">Imagine you see a {{}}:</p>
+	    <div class="row" id="flower_row">
+	    	<div id="flower_evidence2" class="evidence2"></div>
+	    	<style>
+	    		#flower_evidence2{
+					background-color: #383838;
+				}
+			</style>
+	    </div>
+	    <p>Given what you know, what do you say to Mary,</br> who is back in the spaceship eagerly waiting for news?</p>
+
+	    <table>
+	    	<div id="flower_radiotable" align="center">{{}}
+			</div>
+	    </table> 
+
+	    <button onclick="_s.button()">Continue</button>
+	    <div class="err">Please make a selection before continuing.</div>
+	</div>
+
+	<div class="slide" id="fish_intro">
+		<h3><span class="fishs_a">{{}}</span> and <span class="fishs_b"></span></h3>
+		<div class = "animal">
+			<p>On Smultron, there are only two types of fish: <span class="fishs_a">{{}}</span> and <span class="fishs_b">{{}}</span>. There are no other fish. After years of study, scientists have catalogued the <span class="fishs_a">{{}}</span> and <span class="fishs_b"></span>. Have a look!</br> 
+			Pay close attention to their <b>whiskers</b> and <b>fangs</b>.</p>
+				<table>
+				<tbody>
+				<tr>
+				These are the <span class="fishs_a">{{}}</span>: <!-- (pimwits: 100% tar1, 100% tar2) -->
+				</tr>
+				<tr>
+						<div>
+						<svg id="fish_a_0"></svg>
+						<svg id="fish_a_1"></svg>
+						<svg id="fish_a_2"></svg>
+						<svg id="fish_a_3"></svg>
+						</div>
+				</tr>					
+				<tr>
+					<div>
+						<svg id="fish_a_4"></svg>
+						<svg id="fish_a_5"></svg>
+						<svg id="fish_a_6"></svg>
+						<svg id="fish_a_7"></svg>
+						</div>
+				</tr>
+				<tr>
+				These are the <span class="fishs_b">{{}}</span>: <!-- (daxes: 25% tar1, 0% tar2) -->
+				</tr>
+				<tr>
+						<div>
+						<svg id="fish_b_0"></svg>
+						<svg id="fish_b_1"></svg>
+						<svg id="fish_b_2"></svg>
+						<svg id="fish_b_3"></svg>
+						</div>
+				</tr>					
+				<tr>
+					<div>
+						<svg id="fish_b_4"></svg>
+						<svg id="fish_b_5"></svg>
+						<svg id="fish_b_6"></svg>
+						<svg id="fish_b_7"></svg>
+						</div>
+				</tr>
+				</tbody>
+				</table>			
+				</div>
+			<p><span id="fish_q1">{{}}</span> <input type="text" id="fish_q1_a"/></p>
+			<p><span id="fish_q2">{{}}</span> <input type="text" id="fish_q2_a"/></p>
+			<p><span id="fish_q3">{{}}</span> <input type="text" id="fish_q3_a"/></p>
+			<p><span id="fish_q4">{{}}</span> <input type="text" id="fish_q4_a"/></p>
+			<button onclick="_s.button()">Continue</button>
+			<div class="qerr">Please answer all the questions before continuing.</div>			
+		</div>
+
+	<div class="slide" id="fish_slider">
+		<h3><span class="fishs_a">{{}}</span> and <span class="fishs_b"></span></h3>
+	   <p class="evidence1">Imagine you see a {{}}:</p>
+	    <div class="row" id="fish_row">
+	    	<div id="fish_evidence2" class="evidence2"></div>
+	    	<style>
+	    		#fish_evidence2{
+					background-color: #383838;
+				}
+			</style>
+	    </div>
+	    <p>Given what you know, what do you say to Mary,</br> who is back in the spaceship eagerly waiting for news?</p>
+
+	    <table>
+	    	<div id="fish_radiotable" align="center">{{}}
+			</div>
+	    </table> 
+
+	    <button onclick="_s.button()">Continue</button>
+	    <div class="err">Please make a selection before continuing.</div>
+	</div>
+
+
+	<div class="slide"  id="subj_info">
+	    <div class="long_form">
+	      <div class="subj_info_title">Additional information</div>
+	      <p class="info">Answering these questions is optional, but will help us understand your answers.</p>
+	      <p>Did you read the instructions and do you think you did the HIT correctly?</p>
+	      <label><input type="radio"  name="assess" value="No"/>No</label>
+	      <label><input type="radio"  name="assess" value="Yes"/>Yes</label>
+	      <label><input type="radio"  name="assess" value="Confused"/>I was confused</label>
+
+	      <p>Gender:
+	        <select id="gender">
+	          <label><option value=""/></label>
+	          <label><option value="Male"/>Male</label>
+	          <label><option value="Female"/>Female</label>
+	          <label><option value="Other"/>Other</label>
+	        </select>
+	      </p>
+
+	      <p>Age: <input type="text" id="age"/></p>
+
+	      <p>Level Of Education:
+	        <select id="education">
+	          <label><option value="-1"/></label>
+	          <label><option value="0"/>Some High School</label>
+	          <label><option value="1"/>Graduated High School</label>
+	          <label><option value="2"/>Some College</label>
+	          <label><option value="3"/>Graduated College</label>
+	          <label><option value="4"/>Hold a higher degree</label>
+	        </select>
+	      </p>
+
+	      <p>Native Language: <input type="text" id="language"/></p>
+	      <label>(the language(s) spoken at home when you were a child)</label>
+
+	      <p>Did you enjoy the hit?</p>
+	      <select id="enjoyment">
+	        <label><option value="-1"></option></label>
+	        <label><option value="0">Worse than the Average HIT</option></label>
+	        <label><option value="1" >An Average HIT</option></label>
+	        <label><option value="2">Better than average HIT</option></label>
+	      </select>
+
+	      <p>We would be interested in any comments you have about this experiment. Please type them here:</p>
+	      <textarea id="comments" rows="3" cols="50"></textarea>
+	      <br/>
+	      <button onclick="_s.submit()">Submit</button>
+	    </div>
+  	</div>
+
+	<div id="thanks" class="slide js" >
+	    <p  class="big">Thanks for your Time!</p>
+	</div>
+
+	<div class="progress">
+	    <span>Progress:</span>
+	    <div class="bar-wrapper">
+	      <div class="bar" width="0%">
+	      </div>
+	    </div>
+	</div>
+
+
+
+</body>
+</html>

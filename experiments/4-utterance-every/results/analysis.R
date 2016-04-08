@@ -176,7 +176,7 @@ ggplot(dat.all, aes(x=expt,y=Probability,color=state))+
   geom_bar(aes(fill=state),stat="identity",position=position_dodge())+
   facet_grid(.~utterance)+
   theme_bw()+
-  labs(title="comprehension")
+  labs(title="comprehension\n")
 #ggsave("../results/human_model_listener.pdf")
 
 
