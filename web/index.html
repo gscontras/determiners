@@ -1,0 +1,267 @@
+<html>
+<head>
+<meta charset="UTF-8">                           <!-- tell browser that webppl-editor.js contains unicode characters -->
+<script src="webppl.js"></script>                <!-- bundled webppl library -->
+<script src="webppl-editor.js"></script>         <!-- bundled editor library -->
+<script src="webppl-viz.js"></script>            <!-- bundled viz library -->
+
+<link rel="stylesheet" href="webppl-editor.css"> <!-- editor stylesheet -->
+<link rel="stylesheet" href="webppl-viz.css">    <!-- viz stylesheet --> 
+</head>
+<body>
+<p>Step 1: model predictions</p>
+
+<pre><code>//the determiner model
+///fold:
+var worldPrior = function(){
+  return [{fep: flip(0.5), blue: flip(0.5)},
+          {fep: flip(0.5), blue: flip(0.5)}]
+}
+
+var utterances = ["the fep is blue", 
+                  "a fep is blue", 
+                  "the fep isnt blue", 
+                  "a fep isnt blue", 
+                  "every thing is blue",
+                  "every thing isnt blue",
+                  "",
+                 ];
+
+//var cost = function(u) {return 1}//u.split(" ").length}
+var cost = function(u) {
+  var words = u.split(" ")
+  var verb = words[2]
+  if (verb==="isnt") {
+    return 2
+  } else {
+    return 1
+  }
+}
+
+
+var utterancePrior = function() {
+  return utterances[discrete(map(function(u) {return Math.exp(-cost(u));}, 
+                                 utterances))];
+};  
+
+var meaning = function(utterance, world, index) {
+  if (utterance=="") return true //null utterance (should be cheap?)
+  var words = utterance.split(" ")
+  var det = words[0]
+  var cat = words[1]
+  var verb = words[2]
+  var prop = words[3]
+  if (det==="every") {
+    if (verb == "is") {
+      return all(function(x){x[prop]}, world)
+    } else {
+      return all(function(x){!x[prop]}, world)
+    }
+  }
+  if (det==="the") {
+    //version 1: sample a fep and check if it's blue
+    var catMembers = filter(function(x){return x[cat]}, world)
+    if (catMembers.length == 0) {return false}
+    var sampledMember = uniformDraw(catMembers) 
+    if (verb == "is") {return sampledMember[prop]
+                      } else {return !sampledMember[prop]}
+    //version 2: infer *the* fep and check its blueness
+    //     var catMembers = filter(function(x){return x[cat]}, world)
+    //     if (catMembers.length == 0) {return false}
+    //     var sampledMember = world[index] 
+    //     if (sampledMember[cat] == false) {return false}
+    //     return sampledMember[prop]
+  } else { //"a", 
+    //version 1: existential version:
+    if (verb == "is") {return any(function(x){x[cat] & x[prop]}, world)
+                      } else {return any(function(x){x[cat] & !x[prop]}, world)
+                             }
+    //version 2: free index version:
+    //     var index = randomInteger(world.length)
+    //     if (verb == "is") {return world[index][cat] & world[index][prop]
+    //                       } else {return world[index][cat] & !world[index][prop]
+    //                              }
+    //version 3: infer index version:
+    //     if (verb == "is") {return world[index][cat] & world[index][prop]
+    //                       } else {return world[index][cat] & !world[index][prop]
+    //                              }
+  }
+};
+
+//things that are known to be true (used in both listeners):
+var commonKnowledge = function(world,ck) {
+  //return ck?world[1].fep:true //world[0].fep & !world[1].fep & !world[2].fep
+  //presup here is: "there is a unique fep"
+  var prop = filter(function(x){return x.fep}, world).length == 1
+  return ck?prop:true
+}
+
+//possible QUDs
+var quds = ["state", "which"];
+var qudPrior = uniformDraw(quds);
+var qudFn = function(world qud) {
+  if (qud=="state") {
+    return world
+  } 
+  if (qud=="which") {
+    //     if (filter(function(x){return x.blue}, world).length == 1) {
+    //       var prop = filter(function(x){return x.blue}, world)
+    //       return prop;
+    //     } else {
+    return world;
+    //     }
+  }
+}
+
+var literalERP = cache(function(utterance, index, ck, qud) {
+  return Enumerate(function() {
+    var world = worldPrior()
+    condition(meaning(utterance, world, index))
+    //     factor(commonKnowledge(world,ck)?0:-100)
+    return qudFn(world, qud);
+  })
+})
+
+var alpha = 3;
+
+var speakerERP = cache(function(world, index, ck, qud) {
+  return Enumerate(function() {
+    var utterance = utterancePrior();
+    factor( alpha * literalERP(utterance, index, ck, qud).score([], world) );
+    return utterance;
+  });
+});
+
+var listenerERP = cache(function(utterance) {
+  return Enumerate(function() {
+    var world = worldPrior();
+    var ck = false//flip(0.1) //is some prop in cg?
+    var index = randomInteger(world.length)
+    var qud = qudPrior;
+    var val = qudFn(world, qud);
+    factor( speakerERP(val, index, ck, qud).score([], utterance) );
+    //     factor(commonKnowledge(world,ck)?0:-100)
+    return world //map(function(x){return x.fep}, world)
+  });
+});
+
+var speaker2ERP = cache(function(world) {
+  return Enumerate(function() {
+    var utterance = utterancePrior();
+    factor( alpha * listenerERP(utterance).score([], world) );
+    return utterance;
+  });
+});
+
+//worlds
+var w_1111 = [{fep: true, blue: true},
+                {fep: true, blue: true}]   
+
+var w_1112 = [{fep: true, blue: true},
+                {fep: true, blue: false}]                              
+
+var w_1212 = [{fep: true, blue: false},
+                {fep: true, blue: false}]   
+
+var w_1121 = [{fep: true, blue: true},
+                {fep: false, blue: true}]                   
+
+var w_1122 = [{fep: true, blue: true},
+                {fep: false, blue: false}]                   
+
+var w_1221 = [{fep: true, blue: false},
+                {fep: false, blue: true}]   
+
+var w_1222 = [{fep: true, blue: false},
+                {fep: false, blue: false}]   
+
+//listener output
+var a_is = listenerERP("a fep is blue")
+wpEditor.put("a_is.csv",a_is);
+var a_not = listenerERP("a fep isnt blue")
+wpEditor.put("a_not.csv",a_not);
+var the_is = listenerERP("the fep is blue")
+wpEditor.put("the_is.csv",the_is);
+var the_not = listenerERP("the fep isnt blue")
+wpEditor.put("the_not.csv",the_not);
+var every_is = listenerERP("every thing is blue")
+wpEditor.put("every_is.csv",every_is);
+var every_not = listenerERP("every thing isnt blue")
+wpEditor.put("every_not.csv",every_not);
+
+//speaker output
+var s_1111 = speaker2ERP(w_1111)
+wpEditor.put("1111.csv",s_1111);
+var s_1112 = speaker2ERP(w_1112)
+wpEditor.put("1112.csv",s_1112);
+var s_1212 = speaker2ERP(w_1212)
+wpEditor.put("1212.csv",s_1212);
+var s_1121 = speaker2ERP(w_1121)
+wpEditor.put("1121.csv",s_1121);
+var s_1122 = speaker2ERP(w_1122)
+wpEditor.put("1122.csv",s_1122);
+var s_1221 = speaker2ERP(w_1221)
+wpEditor.put("1221.csv",s_1221);
+var s_1222 = speaker2ERP(w_1222)
+wpEditor.put("1222.csv",s_1222);
+///</code></pre>
+
+<p>Step 2: visualize the listener</p>
+
+<pre><code>//visualizing the listener results
+///fold:
+var a_is = wpEditor.get('a_is.csv');
+print('a_is')
+viz.hist(a_is)
+var a_not = wpEditor.get('a_not.csv');
+print('a_not')
+viz.hist(a_not)
+var the_is = wpEditor.get('the_is.csv');
+print('the_is')
+viz.hist(the_is)
+var the_not = wpEditor.get('the_not.csv');
+print('the_not')
+viz.hist(the_not)
+var every_is = wpEditor.get('every_is.csv');
+print('every_is')
+viz.hist(every_is)
+var every_not = wpEditor.get('every_not.csv');
+print('every_not')
+viz.hist(every_not)
+///</code></pre>
+
+<p>Step 3: visualize the speaker</p>
+
+<pre><code>//visualizing the speaker results
+///fold:
+var s_1111 = wpEditor.get('1111.csv');
+print('1111')
+viz.hist(s_1111)
+var s_1112 = wpEditor.get('1112.csv');
+print('1112')
+viz.hist(s_1112)
+var s_1212 = wpEditor.get('1212.csv');
+print('1212')
+viz.hist(s_1212)
+var s_1121 = wpEditor.get('1121.csv');
+print('1121')
+viz.hist(s_1121)
+var s_1122 = wpEditor.get('1122.csv');
+print('1122')
+viz.hist(s_1122)
+var s_1221 = wpEditor.get('1221.csv');
+print('1221')
+viz.hist(s_1221)
+var s_1222 = wpEditor.get('1222.csv');
+print('1222')
+viz.hist(s_1222)
+///</code></pre>
+
+
+</body>
+<script>
+// find all <pre> elements and set up the editor on them
+var preEls = Array.prototype.slice.call(document.querySelectorAll("pre"));
+preEls.map(function(el) { wpEditor.setup(el, {language: 'webppl'}); });
+</script>
+</html>
