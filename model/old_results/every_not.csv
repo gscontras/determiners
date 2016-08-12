@@ -1,0 +1,5 @@
+Value,Probability
+'[{"fep":false,"blue":false},{"fep":false,"blue":false}]',0.3278382132722023
+'[{"fep":false,"blue":false},{"fep":true,"blue":false}]',0.22405392890926587
+'[{"fep":true,"blue":false},{"fep":false,"blue":false}]',0.22405392890926587
+'[{"fep":true,"blue":false},{"fep":true,"blue":false}]',0.22405392890926587

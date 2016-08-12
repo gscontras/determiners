@@ -8,18 +8,18 @@ var print = function(str) {
 
 var printERP = function(erp) {
   var support = erp.support();
-  var probs = map(function(x) {return Math.exp(erp.score([], x));}, support);
+  var probs = map(function(x) {return Math.exp(erp.score(x));}, support);
   print("var s = " + JSON.stringify(support) + ";");
   print("var p = " + JSON.stringify(probs) + ";");
-  print("print(Enumerate(function() {return s[discrete(p)];}))")
+  print("print(Infer({method: 'enumerate'}, function() {return s[discrete(p)];}))")
 };
 
 var vizPrint = function(erp) {
   var support = erp.support();
-  var probs = map(function(x) {return Math.exp(erp.score([], x));}, support);
+  var probs = map(function(x) {return Math.exp(erp.score(x));}, support);
   print("var s = " + JSON.stringify(support) + ";");
   print("var p = " + JSON.stringify(probs) + ";");
-  print("vizPrint(Enumerate(function() {return s[discrete(p)];}))")
+  print("vizPrint(Infer({method: 'enumerate'}, function() {return s[discrete(p)];}))")
 };
 
 
@@ -131,7 +131,8 @@ var qudFn = function(world qud) {
 }
 
 var literalERP = cache(function(utterance, index, ck, qud) {
-  return Enumerate(function() {
+  return Infer({method: 'enumerate'},
+   function() {
     var world = worldPrior()
     condition(meaning(utterance, world, index))
     //     factor(commonKnowledge(world,ck)?0:-100)
@@ -139,33 +140,36 @@ var literalERP = cache(function(utterance, index, ck, qud) {
   })
 })
 
-var alpha = 3;
+var alpha = 1;
 
 var speakerERP = cache(function(world, index, ck, qud) {
-  return Enumerate(function() {
+  return Infer({method: 'enumerate'},
+   function() {
     var utterance = utterancePrior();
-    factor( alpha * literalERP(utterance, index, ck, qud).score([], world) );
+    factor( alpha * literalERP(utterance, index, ck, qud).score(world) );
     return utterance;
   });
 });
 
 var listenerERP = cache(function(utterance) {
-  return Enumerate(function() {
+  return Infer({method: 'enumerate'},
+   function() {
     var world = worldPrior();
     var ck = false//flip(0.1) //is some prop in cg?
     var index = randomInteger(world.length)
     var qud = qudPrior;
     var val = qudFn(world, qud);
-    factor( speakerERP(val, index, ck, qud).score([], utterance) );
+    factor( speakerERP(val, index, ck, qud).score(utterance) );
     //     factor(commonKnowledge(world,ck)?0:-100)
     return world //map(function(x){return x.fep}, world)
   });
 });
 
 var speaker2ERP = cache(function(world) {
-  return Enumerate(function() {
+  return Infer({method: 'enumerate'},
+   function() {
     var utterance = utterancePrior();
-    factor( alpha * listenerERP(utterance).score([], world) );
+    factor( alpha * listenerERP(utterance).score(world) );
     return utterance;
   });
 });
@@ -231,34 +235,34 @@ print(s_output)
 
 
 // printERP(speaker2ERP(worlda))
-// var a_is = listenerERP("a fep is blue")
-// Utils.erpWriter(a_is,"a_is.csv","Value");
-// var a_not = listenerERP("a fep isnt blue")
-// Utils.erpWriter(a_not,"a_not.csv","Value");
-// var the_is = listenerERP("the fep is blue")
-// Utils.erpWriter(the_is,"the_is.csv","Value");
-// var the_not = listenerERP("the fep isnt blue")
-// Utils.erpWriter(the_not,"the_not.csv","Value");
+var a_is = listenerERP("a fep is blue")
+Utils.erpWriter(a_is,"a_is.csv","Value");
+var a_not = listenerERP("a fep isnt blue")
+Utils.erpWriter(a_not,"a_not.csv","Value");
+var the_is = listenerERP("the fep is blue")
+Utils.erpWriter(the_is,"the_is.csv","Value");
+var the_not = listenerERP("the fep isnt blue")
+Utils.erpWriter(the_not,"the_not.csv","Value");
 var every_is = listenerERP("every thing is blue")
 Utils.erpWriter(every_is,"every_is.csv","Value");
 var every_not = listenerERP("every thing isnt blue")
 Utils.erpWriter(every_not,"every_not.csv","Value");
 
 
-// var s_1111 = speaker2ERP(w_1111)
-// Utils.erpWriter(s_1111,"1111.csv","Value");
-// var s_1112 = speaker2ERP(w_1112)
-// Utils.erpWriter(s_1112,"1112.csv","Value");
-// var s_1212 = speaker2ERP(w_1212)
-// Utils.erpWriter(s_1212,"1212.csv","Value");
-// var s_1121 = speaker2ERP(w_1121)
-// Utils.erpWriter(s_1121,"1121.csv","Value");
-// var s_1122 = speaker2ERP(w_1122)
-// Utils.erpWriter(s_1122,"1122.csv","Value");
-// var s_1221 = speaker2ERP(w_1221)
-// Utils.erpWriter(s_1221,"1221.csv","Value");
-// var s_1222 = speaker2ERP(w_1222)
-// Utils.erpWriter(s_1222,"1222.csv","Value");
+var s_1111 = speaker2ERP(w_1111)
+Utils.erpWriter(s_1111,"1111.csv","Value");
+var s_1112 = speaker2ERP(w_1112)
+Utils.erpWriter(s_1112,"1112.csv","Value");
+var s_1212 = speaker2ERP(w_1212)
+Utils.erpWriter(s_1212,"1212.csv","Value");
+var s_1121 = speaker2ERP(w_1121)
+Utils.erpWriter(s_1121,"1121.csv","Value");
+var s_1122 = speaker2ERP(w_1122)
+Utils.erpWriter(s_1122,"1122.csv","Value");
+var s_1221 = speaker2ERP(w_1221)
+Utils.erpWriter(s_1221,"1221.csv","Value");
+var s_1222 = speaker2ERP(w_1222)
+Utils.erpWriter(s_1222,"1222.csv","Value");
 
 // var s_output = speaker2ERP(worlda)
 // print(s_output)

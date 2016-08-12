@@ -1,8 +1,8 @@
 Value,Probability
-'[{"fep":false,"blue":false},{"fep":true,"blue":true}]',0.2953656931053869
-'[{"fep":false,"blue":true},{"fep":true,"blue":true}]',0.09825946744176592
-'[{"fep":true,"blue":false},{"fep":true,"blue":true}]',0.05724510573196435
-'[{"fep":true,"blue":true},{"fep":false,"blue":false}]',0.2953656931053869
-'[{"fep":true,"blue":true},{"fep":false,"blue":true}]',0.09825946744176592
-'[{"fep":true,"blue":true},{"fep":true,"blue":false}]',0.05724510573196435
-'[{"fep":true,"blue":true},{"fep":true,"blue":true}]',0.09825946744176592
+'[{"fep":false,"blue":false},{"fep":true,"blue":true}]',0.20856850381787853
+'[{"fep":false,"blue":true},{"fep":true,"blue":true}]',0.1247419281207408
+'[{"fep":true,"blue":false},{"fep":true,"blue":true}]',0.10431860400101023
+'[{"fep":true,"blue":true},{"fep":false,"blue":false}]',0.20856850381787853
+'[{"fep":true,"blue":true},{"fep":false,"blue":true}]',0.1247419281207408
+'[{"fep":true,"blue":true},{"fep":true,"blue":false}]',0.10431860400101023
+'[{"fep":true,"blue":true},{"fep":true,"blue":true}]',0.1247419281207408

@@ -176,7 +176,7 @@ ggplot(dat.all, aes(x=expt,y=Probability,color=state))+
   facet_grid(.~utterance)+
   theme_bw()+
   labs(title="comprehension\n")
-#ggsave("human_model_listener.pdf")
+#ggsave("human_model_listener_alpha-1.pdf")
 
 
 
@@ -240,4 +240,4 @@ ggplot(p_dat.all, aes(x=expt,y=Probability,color=utterance))+
   facet_grid(.~state)+
   theme_bw() +
   labs(title="production\n")
-#ggsave("human_model_speaker.pdf")
+#ggsave("human_model_speaker_alpha-1.pdf")
